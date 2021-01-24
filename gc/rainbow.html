@@ -67,6 +67,10 @@ function initDocument()
     inner.addEventListener("mousedown", mouseDown);
     inner.addEventListener("mouseup", mouseUp);
     inner.addEventListener("mousemove", mouseMove);
+    inner.addEventListener("touchstart", mouseDown);
+    inner.addEventListener("touchend", mouseUp);
+    inner.addEventListener("touchmove", mouseMove);
+    
     window.addEventListener('resize', updateScale);
 }
 

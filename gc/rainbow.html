@@ -12,37 +12,41 @@ var scaling = 1;
 var colors = [ '#E40203', '#FE7301', '#FEED01', '#008029', '#0045E8', '#750686' ];
 var startpattern = [[1,0,2,5], [3,5,4,2], [0,1,3,5], [0,3,2,0,], [2,4,1,4], [5,1,3,4] ];
 
-var elementUnderMouse = null;
-var fromColumn = 0;
+var elementSelected = null;
+var columnSelected = 0;
+
+function w()
+{
+    return window.innerWidth/10;
+}
+
+function h()
+{
+    return w()*1.1;
+}
 
 function l(col,row)
 {
-    return (3 + col*12); 
+    return w() * (0.3 + col*1.2); 
 }
 
 function t(col,row)
 {
-    return (55-(row*15)); 
+    return h() * (3.3-row); 
 }
+
+
 
 function nearestcolumn(x)
 {
-    return Math.max(0,Math.min(7,Math.floor((x-1.5)/12.5)))
+    return Math.max(0,Math.min(7,Math.floor((x/w()-0.15)/1.2)))
 }
 
 
 function initDocument()
 {
-	document.body.innerHTML = ''
+    inner = document.getElementById("playfield");
     
-    var page = document.createElement('div');
-    page.style.cssText = 'position:absolute;width:100%;height:100%';
-    document.body.appendChild(page);
-        
-    inner = document.createElement('div');
-    inner.style.cssText = 'position:absolute;width:100;height:100;top:0;left:0;opacity:1;background:#000;transform-origin:top left';
-    page.appendChild(inner);
-
     columns = [];
     for (c=0; c<8; c++)
     {
@@ -53,7 +57,9 @@ function initDocument()
             var color = colors[startpattern[c][r]];
             
             var box = document.createElement('div');
-            box.style.cssText = 'position:absolute;width:10;height:15;opacity:1;z-index:1;background:'+color;
+            box.style.cssText = 'position:absolute;opacity:1;z-index:1;background:'+color;
+            box.style.width = w();
+            box.style.height = h();
             box.style.left = l(c,r);
             box.style.top = t(c,r);
             inner.appendChild(box);
@@ -64,87 +70,70 @@ function initDocument()
     
     updateScale();
 
-    inner.addEventListener("mousedown", mouseDown);
-    inner.addEventListener("mouseup", mouseUp);
-    inner.addEventListener("mousemove", mouseMove);
-    inner.addEventListener("touchstart", mouseDown);
-    inner.addEventListener("touchend", mouseUp);
-    inner.addEventListener("touchmove", mouseMove);
-    
+    inner.addEventListener("click", click);
     window.addEventListener('resize', updateScale);
 }
 
-function mouseDown(event) 
+function click(event)
 {
     var x = event.x/scaling;
     var y = event.y/scaling;
-//    console.log("mouse down",x,y);
+//    console.log("click ",x,y);
 
     var c = nearestcolumn(x);
-    if (elementUnderMouse==null && columns[c].length>0)
+    if (elementSelected==null)
     {
-        fromColumn = c;
-        elementUnderMouse = columns[c].pop();
-        elementUnderMouse.style["z-index"] = 2;
-        dragTo(x,y)
+        if (columns[c].length>0)
+        {
+            columnSelected = c;
+            elementSelected = columns[c][columns[c].length-1];
+            elementSelected.style.opacity = 0.5;
+        }
     }
-}
- 
-function mouseUp(event) 
-{
-    var x = event.x/scaling;
-    var y = event.y/scaling;
-    
-    var c = nearestcolumn(x);
-    if (elementUnderMouse!=null)
+    else
     {
-        var target = fromColumn;
+        var target = columnSelected;
         var tl = columns[c].length;
-        if (tl<4 && c!=fromColumn)
-            if (tl<1 || columns[c][tl-1].style.background == elementUnderMouse.style.background)
+        if (tl<1 || (tl<4 && columns[c][tl-1].style.background==elementSelected.style.background) )
         {
             target = c;
         }
-        elementUnderMouse.style.left = l(target,columns[target].length);
-        elementUnderMouse.style.top  = t(target,columns[target].length);        
-        elementUnderMouse.style["z-index"] = 1;
-        columns[target].push(elementUnderMouse); 
-        elementUnderMouse = null;
-    }
-    
-    
-//    console.log("mouse up",x,y);
-}
-
-function mouseMove(event) 
-{
-    var x = event.x/scaling;
-    var y = event.y/scaling;
-//    console.log("mouse move",x,y);
-    
-    if (elementUnderMouse!=null)
-    {
-        dragTo(x,y);        
-    }
+        
+        columns[target].push (columns[columnSelected].pop());
+        var r = columns[target].length-1;
+        elementSelected.style.opacity = 1;
+        elementSelected.style.left = l(target,r);
+        elementSelected.style.top = t(target,r);
+        elementSelected = null;
+    }    
 }
 
 
 function updateScale()
 {
-    var s = Math.min(window.innerWidth,window.innerHeight) / 100.0;
-    inner.style.transform = "scale(" + s +")" 
-    scaling = s;
+    for (c=0; c<columns.length; c++)
+    {
+        for (r=0; r<columns[c].length; r++)
+        {
+            var e = columns[c][r];
+            e.style.left = l(c,r);
+            e.style.top = t(c,r);
+            e.style.width = w();
+            e.style.height = h();
+        }
+     }
 }
 
-function dragTo(x,y)
-{
-    elementUnderMouse.style.left = x-5;
-    elementUnderMouse.style.top = y-7.5;
-}
 
 </script>
 
 </head>
-<body onload="initDocument()" style="margin:0">
+<body onload="initDocument()" style="margin:0;background:#000">
+
+    <div id="playfield" style='width:100vw;height:50vw;opacity:1;background:#000'></div>
+    
+    <p id="message" style="text-align:center;color:#FFF;font-size:xx-large">
+    Setzte Reginas Regenbogen wieder richtig zusammen!
+    </p>
 </body>
 </html>

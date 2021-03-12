@@ -1,19 +1,10 @@
 <html>
 <head>
 <meta charset="utf-8"/>
-<title>Regenbogen Puzzle</title>
+<title>Flussüberquerung</title>
 
 <script>
 
-var inner = null;
-var columns = null;
-var scaling = 1;
-
-var colors = [ '#E40203', '#FE7301', '#FEED01', '#008029', '#0045E8', '#750686' ];
-var startpattern = [[1,0,2,5], [3,5,4,2], [0,1,3,5], [0,3,2,0,], [2,4,1,4], [5,1,3,4] ];
-
-var elementSelected = null;
-var columnSelected = 0;
 
 function w()
 {
@@ -45,33 +36,11 @@ function nearestcolumn(x)
 
 function initDocument()
 {
-    inner = document.getElementById("playfield");
-    
-    columns = [];
-    for (c=0; c<8; c++)
-    {
-        columns.push([]);
-        
-        for (r=0; c<6 && r<4; r++)
-        {
-            var color = colors[startpattern[c][r]];
-            
-            var box = document.createElement('div');
-            box.style.cssText = 'position:absolute;opacity:1;z-index:1;background:'+color;
-            box.style.width = w();
-            box.style.height = h();
-            box.style.left = l(c,r);
-            box.style.top = t(c,r);
-            inner.appendChild(box);
-            
-            columns[c].push(box);
-        }
-    }   
     
     updateScale();
 
-    inner.addEventListener("click", click);
-    window.addEventListener('resize', updateScale);
+//    inner.addEventListener("click", click);
+    window.addEventListener('resize', updatePositions);
 }
 
 function click(event)
@@ -109,19 +78,19 @@ function click(event)
 }
 
 
-function updateScale()
+function updatePositions()
 {
-    for (c=0; c<columns.length; c++)
-    {
-        for (r=0; r<columns[c].length; r++)
-        {
-            var e = columns[c][r];
-            e.style.left = l(c,r);
-            e.style.top = t(c,r);
-            e.style.width = w();
-            e.style.height = h();
-        }
-     }
+//    for (c=0; c<columns.length; c++)
+//    {
+//        for (r=0; r<columns[c].length; r++)
+//        {
+//            var e = columns[c][r];
+//            e.style.left = l(c,r);
+//            e.style.top = t(c,r);
+//            e.style.width = w();
+//            e.style.height = h();
+//        }
+//     }
 }
 
 
@@ -130,10 +99,21 @@ function updateScale()
 </head>
 <body onload="initDocument()" style="margin:0;background:#000">
 
-    <div id="playfield" style='width:100vw;height:50vw;opacity:1;background:#000'></div>
+    <div id="playfield" style='width:100vw;height:70vw'>
+        <img src="crossing/flussbild.jpg" style='position:absolute;width:100vw;height:70vw'></img>
+
+        <img id="horse" src="crossing/flussbild.jpg" style='position:absolute;width:0;height:0'</img>
+        <img id="person0" src="crossing/flussbild.jpg" style='position:absolute;width:0;height:0'></img>
+        <img id="person1" src="crossing/flussbild.jpg" style='position:absolute;width:0;height:0'></img>
+        <img id="person2" src="crossing/flussbild.jpg" style='position:absolute;width:0;height:0'></img>
+        <img id="person3" src="crossing/flussbild.jpg" style='position:absolute;width:0;height:0'></img>
+        <img id="person4" src="crossing/flussbild.jpg" style='position:absolute;width:0;height:0'></img>
+        <img id="person5" src="crossing/flussbild.jpg" style='position:absolute;width:0;height:0'></img>
+    
+    </div>
     
     <p id="message" style="text-align:center;color:#FFF;font-size:xx-large">
-    Setzte Reginas Regenbogen wieder richtig zusammen!
+    Bringe unsere Freunde auf die andere Seite!
     </p>
 </body>
 </html>
